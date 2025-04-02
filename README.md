@@ -41,7 +41,7 @@ ai-agent-app/
 
 4. Start the backend server:
    ```bash
-   npm start
+   npm run dev
    ```
 
 ### Frontend Setup
