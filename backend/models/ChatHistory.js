@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
   content: String,
-  role: { type: String, enum: ['human', 'ai'] },
+  type: { type: String, enum: ['human', 'ai'] },
   timestamp: { type: Date, default: Date.now }
 });
 

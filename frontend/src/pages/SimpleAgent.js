@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, Stack, useTheme, useMediaQuery } from '@mui/material';
+import { Typography, Grid, useTheme, useMediaQuery, Paper } from '@mui/material';
 import { Bot } from 'lucide-react';
 import AgentForm from '../components/AgentForm';
 import ChatInterface from '../components/ChatInterface';
@@ -10,6 +10,7 @@ const SimpleAgent = () => {
   const [agents, setAgents] = useState([]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const fetchAgents = async () => {
     try {
@@ -32,11 +33,56 @@ const SimpleAgent = () => {
     setAgents(agents.filter(agent => agent._id !== deletedAgentId));
   };
 
+  const containerStyle = {
+    width: '100%',
+    padding: '10px',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap:"10px"
+  };
+
+  const headerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '16px',
+    marginBottom: isSmallScreen ? '24px' : isMobile ? '32px' : '48px',
+    transition: 'all 0.3s ease-in-out'
+  };
+
+  const mainGridStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: isSmallScreen ? '16px' : isMobile ? '24px' : '32px',
+    height: isMobile ? 'auto' : 'calc(100vh - 180px)',
+    minHeight: isMobile ? 'auto' : '600px',
+    maxHeight: isMobile ? 'none' : 'calc(100vh - 120px)'
+  };
+
+  const leftColumnStyle = {
+    width: isMobile ? '100%' : '320px',
+    maxWidth: isMobile ? '100%' : '320px',
+    margin: isMobile ? '0 auto' : '0',
+    height: isMobile ? 'auto' : '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap:'10px'
+  };
+
+  const rightColumnStyle = {
+    width:  '100%' ,
+    height: isMobile ? '600px' : '100%',
+    minHeight: isMobile ? '600px' : 'auto',
+  };
+
+
   return (
-    <Box
-      sx={{
+    <div
+      style={{
+        display: 'flex',
         minHeight: '100vh',
-        py: 4,
+        padding: "10px",
         background: 'linear-gradient(45deg, #2c3e50 0%, #3498db 25%, #8e44ad 50%, #27ae60 75%, #1abc9c 100%)',
         backgroundSize: '200% 200%',
         animation: 'aurora 15s ease infinite',
@@ -47,84 +93,42 @@ const SimpleAgent = () => {
         },
       }}
     >
-      <Container maxWidth="xl" sx={{ px: { xs: 2, md: 4 } }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 2,
-            mb: { xs: 4, md: 6 },
-          }}
-        >
-          <Bot size={isMobile ? 32 : 40} color={'white'} />
+      <div style={containerStyle}>
+        <div style={headerStyle}>
+          <Bot size={isSmallScreen ? 28 : isMobile ? 32 : 40} color={'white'} />
           <Typography
-            variant={isMobile ? "h5" : "h4"}
+            variant={isSmallScreen ? "h6" : isMobile ? "h5" : "h4"}
             component="h1"
-            sx={{
+            style={{
               color: 'white',
               textAlign: 'center',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              margin: 0
             }}
           >
             Simple Text-to-Text Agent
           </Typography>
-        </Box>
+        </div>
 
-        <Grid 
-          container 
-          spacing={{ xs: 2, md: 4 }} 
-          sx={{ 
-            flexWrap: 'nowrap', 
-            flexDirection: { xs: 'column', md: 'row' },
-            height: { xs: 'auto', md: 'calc(100vh - 200px)' }
-          }}
-        >
+        <div style={mainGridStyle}>
           {/* Left Column - Agent Creation/List */}
-          <Grid 
-            item 
-            xs={12} 
-            md={3} 
-            lg={2}
-            sx={{
-              width: { xs: '100%', md: 'auto' },
-              maxWidth: { xs: '100%', md: '300px' },
-              mx: 'auto'
-            }}
-          >
-            <Stack spacing={{ xs: 2, md: 4 }}>
-              <AgentForm onAgentCreated={handleAgentCreated} />
-              <AgentList agents={agents} onAgentDeleted={handleAgentDeleted} />
-            </Stack>
-          </Grid>
+          <div style={leftColumnStyle}>
+
+            <AgentForm onAgentCreated={handleAgentCreated} />
+            <AgentList agents={agents} onAgentDeleted={handleAgentDeleted} />
+
+          </div>
 
           {/* Right Column - Chat Interface */}
-          <Grid 
-            item 
-            xs={12} 
-            md={9} 
-            lg={10}
-            sx={{
-              width: { xs: '100%', md: 'auto' },
-              height: { xs: '600px', md: '100%' },
-              minHeight: { xs: '600px', md: 'auto' }
-            }}
-          >
-            <Box
-              sx={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              <ChatInterface agents={agents} />
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+          <div style={rightColumnStyle}>
+
+            <ChatInterface agents={agents} />
+
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
