@@ -13,47 +13,69 @@ class MongoDBMemory extends BaseChatMemory {
     this.agentId = agentId;
   }
 
-  async loadMemoryVariables(values) {
-    const chatHistory = await ChatHistory.findOne({ agentId: this.agentId });
-    
-    if (!chatHistory) {
-      await ChatHistory.create({
-        agentId: this.agentId,
-        messages: [],
-        lastUpdated: new Date()
-      });
+  async loadMemoryVariables() {
+    try {
+      const chatHistory = await ChatHistory.findOne({ agentId: this.agentId });
+      if (!chatHistory) {
+        return { [this.memoryKey]: [] };
+      }
+
+      // Filter out invalid messages and ensure proper format
+      const messages = chatHistory.messages
+        .filter(msg => msg && msg.content && typeof msg.content === 'string')
+        .map(msg => {
+          if (msg.type === 'human') {
+            return new HumanMessage({ content: msg.content });
+          } else if (msg.type === 'ai') {
+            return new AIMessage({ content: msg.content });
+          }
+          return msg;
+        });
+
+      return { [this.memoryKey]: messages };
+    } catch (error) {
+      console.error('Error loading memory variables:', error);
       return { [this.memoryKey]: [] };
     }
-
-    const messages = chatHistory.messages.map(msg => {
-      return msg.type === "human" 
-        ? new HumanMessage(msg.content)
-        : new AIMessage(msg.content);
-    });
-
-    this.chatHistory = messages;
-    return { [this.memoryKey]: messages };
   }
 
   async saveContext(inputValues, outputValues) {
-    await super.saveContext(inputValues, outputValues);
+    try {
+      // Validate input and output
+      if (!inputValues || !outputValues) {
+        throw new Error('Invalid input or output values');
+      }
 
-    const messages = this.chatHistory.map(msg => ({
-      content: msg.content,
-      type: msg instanceof HumanMessage ? "human" : "ai",
-      timestamp: new Date()
-    }));
+      const input = inputValues.input;
+      const output = outputValues.output;
 
-    await ChatHistory.findOneAndUpdate(
-      { agentId: this.agentId },
-      { 
-        $set: { 
-          messages,
+      if (!input || typeof input !== 'string' || !output || typeof output !== 'string') {
+        throw new Error('Input and output must be valid strings');
+      }
+
+      // Create new messages
+      const humanMessage = { type: 'human', content: input };
+      const aiMessage = { type: 'ai', content: output };
+
+      // Update chat history in database
+      const chatHistory = await ChatHistory.findOne({ agentId: this.agentId });
+      if (!chatHistory) {
+        await ChatHistory.create({
+          agentId: this.agentId,
+          messages: [humanMessage, aiMessage],
           lastUpdated: new Date()
-        }
-      },
-      { upsert: true, new: true }
-    );
+        });
+      } else {
+        chatHistory.messages.push(humanMessage, aiMessage);
+        chatHistory.lastUpdated = new Date();
+        await chatHistory.save();
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error saving context:', error);
+      throw error;
+    }
   }
 
   async clear() {

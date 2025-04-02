@@ -1,79 +1,60 @@
-# AI Pipeline Builder
+# AI Agent Application
 
-A web application for building and managing AI pipelines with a modern React frontend and Node.js backend.
+A full-stack application for creating and managing AI agents using LangGraph and OpenAI.
 
 ## Features
 
-- Create and manage AI pipelines
-- Upload and process files
-- Real-time pipeline execution status
-- Modern and responsive UI
-- Secure file handling
-- Error management and logging
+- Create custom AI agents with specific instructions
+- Real-time chat interface with agents
+- Persistent chat history
+- Memory management using MongoDB
+- Built with React and Node.js
 
-## Project Structure
+## Tech Stack
 
-```
-ai-agent-app/
-├── frontend/          # React frontend application
-└── backend/          # Node.js backend server
-```
-
-## Setup Instructions
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create a `.env` file with required environment variables:
-   ```
-   PORT=5000
-   OPENAI_API_KEY=your_api_key_here
-   ```
-
-4. Start the backend server:
-   ```bash
-   npm start
-   ```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+- Frontend: React, Material-UI, Vite
+- Backend: Node.js, Express
+- AI: OpenAI, LangGraph
+- Database: MongoDB
+- Deployment: Vercel
 
 ## Environment Variables
 
-- `PORT`: Backend server port (default: 5000)
-- `OPENAI_API_KEY`: Your OpenAI API key
+Create a `.env` file in the root directory with the following variables:
 
-## Contributing
+```env
+MONGODB_URI=your_mongodb_uri
+OPENAI_API_KEY=your_openai_api_key
+```
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+## Development
+
+1. Install dependencies:
+```bash
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
+
+2. Start the development servers:
+```bash
+# Start backend server
+cd backend
+npm run dev
+
+# Start frontend server
+cd ../frontend
+npm run dev
+```
+
+## Deployment
+
+The application is configured for deployment on Vercel. The `vercel.json` file handles both frontend and backend routing.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT 

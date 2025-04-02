@@ -71,11 +71,12 @@ router.get('/actions', async (req, res) => {
 // Create a new pipeline
 router.post('/', async (req, res) => {
   try {
-    const { name, description, steps } = req.body;
+    const { name, description, steps, inputType } = req.body;
     const tool = new Tool({
       name,
       description,
       steps,
+      inputType,
       userId: req.user?._id || 'default' // Temporarily remove auth requirement
     });
     await tool.save();

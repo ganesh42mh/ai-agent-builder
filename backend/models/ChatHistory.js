@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
   content: String,
-  type: { type: String, enum: ['human', 'ai'] },
+  role: { type: String, enum: ['human', 'ai'] },
   timestamp: { type: Date, default: Date.now }
 });
 
@@ -15,4 +15,6 @@ const chatHistorySchema = new mongoose.Schema({
 // Create index for faster queries
 chatHistorySchema.index({ agentId: 1 });
 
-export default mongoose.model('ChatHistory', chatHistorySchema); 
+const ChatHistory = mongoose.model('ChatHistory', chatHistorySchema);
+
+export default ChatHistory; 

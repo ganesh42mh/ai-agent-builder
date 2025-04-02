@@ -2,6 +2,7 @@ const { StateGraph } = require('@langchain/langgraph');
 const Tool = require('../models/Tool');
 const Execution = require('../models/Execution');
 const aiActions = require('../utils/aiActions');
+const customActionService = require('./CustomActionService');
 
 class PipelineService {
   async createPipeline(userId, pipelineData) {
@@ -49,7 +50,17 @@ class PipelineService {
       tool.steps.forEach((step) => {
         graph.addNode(step.action, async (state) => {
           try {
-            const result = await aiActions[step.action](state.input, step.inputs);
+            let result;
+            if (step.action === 'custom') {
+              // Execute custom action
+              result = await customActionService.executeCustomAction(step.customActionId, {
+                ...state,
+                ...step.inputs
+              });
+            } else {
+              // Execute built-in action
+              result = await aiActions[step.action](state.input, step.inputs);
+            }
             return { ...state, [step.action]: result };
           } catch (error) {
             throw new Error(`Step ${step.action} failed: ${error.message}`);
@@ -124,4 +135,4 @@ class PipelineService {
   }
 }
 
-module.exports = new PipelineService(); 
+export default new PipelineService(); 
