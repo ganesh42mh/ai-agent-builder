@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, Stack } from '@mui/material';
+import { Container, Typography, Box, Grid, Stack, useTheme, useMediaQuery } from '@mui/material';
 import { Bot } from 'lucide-react';
 import AgentForm from '../components/AgentForm';
 import ChatInterface from '../components/ChatInterface';
@@ -8,6 +8,8 @@ import axios from 'axios';
 
 const SimpleAgent = () => {
   const [agents, setAgents] = useState([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const fetchAgents = async () => {
     try {
@@ -52,12 +54,12 @@ const SimpleAgent = () => {
             alignItems: 'center',
             justifyContent: 'center',
             gap: 2,
-            mb: 6,
+            mb: { xs: 4, md: 6 },
           }}
         >
-          <Bot size={40} color={'white'} />
+          <Bot size={isMobile ? 32 : 40} color={'white'} />
           <Typography
-            variant="h4"
+            variant={isMobile ? "h5" : "h4"}
             component="h1"
             sx={{
               color: 'white',
@@ -68,24 +70,53 @@ const SimpleAgent = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={4} sx={{ flexWrap: 'nowrap', flexDirection: { xs: 'column', md: 'row' } }}>
-          {/* Left Column - Agent Creation/List (20% width) */}
-          <Grid item xs={12} md={3} lg={2}>
-            <Stack spacing={4}>
+        <Grid 
+          container 
+          spacing={{ xs: 2, md: 4 }} 
+          sx={{ 
+            flexWrap: 'nowrap', 
+            flexDirection: { xs: 'column', md: 'row' },
+            height: { xs: 'auto', md: 'calc(100vh - 200px)' }
+          }}
+        >
+          {/* Left Column - Agent Creation/List */}
+          <Grid 
+            item 
+            xs={12} 
+            md={3} 
+            lg={2}
+            sx={{
+              width: { xs: '100%', md: 'auto' },
+              maxWidth: { xs: '100%', md: '300px' },
+              mx: 'auto'
+            }}
+          >
+            <Stack spacing={{ xs: 2, md: 4 }}>
               <AgentForm onAgentCreated={handleAgentCreated} />
               <AgentList agents={agents} onAgentDeleted={handleAgentDeleted} />
             </Stack>
           </Grid>
 
-          {/* Right Column - Chat Interface (80% width) */}
-          <Grid item xs={12} md={9} lg={10}>
+          {/* Right Column - Chat Interface */}
+          <Grid 
+            item 
+            xs={12} 
+            md={9} 
+            lg={10}
+            sx={{
+              width: { xs: '100%', md: 'auto' },
+              height: { xs: '600px', md: '100%' },
+              minHeight: { xs: '600px', md: 'auto' }
+            }}
+          >
             <Box
               sx={{
-                height: 'calc(100vh - 200px)',
-                minHeight: '600px',
+                height: '100%',
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                width: '1000px',
+                position: 'relative',
+                overflow: 'hidden'
               }}
             >
               <ChatInterface agents={agents} />

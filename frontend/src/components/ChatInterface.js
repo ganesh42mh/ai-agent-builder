@@ -14,6 +14,8 @@ import {
   InputLabel,
   Stack,
   Avatar,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { Send, Bot, User } from 'lucide-react';
 import axios from 'axios';
@@ -26,6 +28,8 @@ const ChatInterface = ({ agents }) => {
   const [agentChatHistories, setAgentChatHistories] = useState({});
   const chatContainerRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -115,9 +119,13 @@ const ChatInterface = ({ agents }) => {
     }}>
       <Stack sx={{
         height: '100%',
-        minHeight: '600px'
+        minHeight: { xs: '400px', sm: '500px', md: '600px' }
       }}>
-        <Box sx={{ p: 3, borderBottom: 1, borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+        <Box sx={{ 
+          p: { xs: 2, sm: 3 }, 
+          borderBottom: 1, 
+          borderColor: 'rgba(255, 255, 255, 0.1)' 
+        }}>
           <FormControl fullWidth>
             <InputLabel sx={{ 
               color: 'white',
@@ -164,7 +172,7 @@ const ChatInterface = ({ agents }) => {
             flexGrow: 1,
             overflow: 'auto',
             bgcolor: 'rgba(15, 23, 42, 0.6)',
-            p: 3,
+            p: { xs: 2, sm: 3 },
           }}
         >
           <List>
@@ -174,7 +182,8 @@ const ChatInterface = ({ agents }) => {
                 sx={{
                   flexDirection: 'column',
                   alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                  mb: 2,
+                  mb: { xs: 1.5, sm: 2 },
+                  px: { xs: 1, sm: 2 },
                 }}
               >
                 <Box
@@ -183,27 +192,39 @@ const ChatInterface = ({ agents }) => {
                     alignItems: 'flex-start',
                     gap: 1,
                     flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row',
-                    maxWidth: '70%',
+                    maxWidth: { xs: '85%', sm: '80%', md: '70%' },
                   }}
                 >
                   <Avatar
                     sx={{
                       bgcolor: msg.sender === 'user' ? '#3b82f6' : '#7c3aed',
+                      width: { xs: 32, sm: 40 },
+                      height: { xs: 32, sm: 40 },
                     }}
                   >
-                    {msg.sender === 'user' ? <User size={20} /> : <Bot size={20} />}
+                    {msg.sender === 'user' ? 
+                      <User size={isMobile ? 16 : 20} /> : 
+                      <Bot size={isMobile ? 16 : 20} />
+                    }
                   </Avatar>
                   <Paper
                     elevation={0}
                     sx={{
-                      p: 2,
+                      p: { xs: 1.5, sm: 2 },
                       bgcolor: msg.sender === 'user' ? '#3b82f6' : 'rgba(15, 23, 42, 0.8)',
                       color: 'white',
                       borderRadius: 2,
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                     }}
                   >
-                    <Typography variant="body1" sx={{whiteSpace: 'pre-wrap', textAlign:'justify'}}>
+                    <Typography 
+                      variant="body1" 
+                      sx={{
+                        whiteSpace: 'pre-wrap', 
+                        textAlign: 'justify',
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
+                      }}
+                    >
                       {msg.text}
                     </Typography>
                   </Paper>
@@ -217,13 +238,13 @@ const ChatInterface = ({ agents }) => {
           component="form"
           onSubmit={handleSendMessage}
           sx={{
-            p: 3,
+            p: { xs: 2, sm: 3 },
             borderTop: 1,
             borderColor: 'rgba(255, 255, 255, 0.1)',
             bgcolor: 'rgba(15, 23, 42, 0.6)',
           }}
         >
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={{ xs: 1, sm: 2 }}>
             <TextField
               fullWidth
               placeholder="Type your message..."
@@ -231,7 +252,7 @@ const ChatInterface = ({ agents }) => {
               onChange={(e) => setMessage(e.target.value)}
               disabled={!selectedAgent}
               variant="outlined"
-              size="medium"
+              size={isMobile ? "small" : "medium"}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
@@ -250,9 +271,6 @@ const ChatInterface = ({ agents }) => {
                     '&.Mui-focused': {
                       color: '#60a5fa',
                     },
-                    '&.MuiInputLabel-shrink': {
-                      color: 'white',
-                    },
                   },
                 },
               }}
@@ -260,17 +278,17 @@ const ChatInterface = ({ agents }) => {
             <Button
               type="submit"
               variant="contained"
-              color="primary"
-              disabled={!selectedAgent || !message.trim()}
-              sx={{ 
-                px: 3,
+              disabled={!selectedAgent || !message.trim() || loading}
+              sx={{
+                minWidth: { xs: 'auto', sm: '100px' },
+                px: { xs: 2, sm: 3 },
                 backgroundColor: '#3b82f6',
                 '&:hover': {
                   backgroundColor: '#2563eb',
                 },
               }}
             >
-              <Send size={20} />
+              <Send size={isMobile ? 20 : 24} />
             </Button>
           </Stack>
         </Box>
